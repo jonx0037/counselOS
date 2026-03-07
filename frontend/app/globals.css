@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --counsel-navy: #0F2044;
+    --counsel-blue: #1A4A8A;
+    --counsel-mid: #2E75B6;
+    --counsel-light: #D6E4F0;
+    --counsel-gold: #C9A84C;
+  }
+
+  body {
+    @apply text-slate-800;
+  }
+
+  h1, h2, h3 {
+    @apply font-semibold tracking-tight;
+  }
+}
