@@ -16,6 +16,7 @@ from models.matter import (
 )
 from orchestrator.state import MatterState
 from models.matter import ChatMessage, ChatRequest, ChatResponse
+from orchestrator.pipeline import CounselOSPipeline
 
 
 class TestChatModels:
@@ -149,3 +150,30 @@ class TestRiskFlags:
 
     def test_notes_default_empty(self) -> None:
         assert RiskFlags().notes == []
+
+
+class TestResultCache:
+    def test_cache_result_and_retrieve(self) -> None:
+        result = IntakeResult(
+            matter_id="MATTER-CACHE01",
+            client_name="Test Corp",
+            submitted_by="Jane",
+            submitted_at=datetime.utcnow(),
+            matter_type=MatterType.CONTRACT,
+            matter_type_confidence=0.9,
+            matter_summary="Test summary",
+            urgency=UrgencyLevel.STANDARD,
+            risk_score=5.0,
+            risk_flags=RiskFlags(),
+            recommended_tier=AssignmentTier.ASSOCIATE,
+            intake_summary="Summary text",
+            suggested_next_steps=["Step 1"],
+        )
+        CounselOSPipeline.cache_result(result)
+        cached = CounselOSPipeline.get_cached_result("MATTER-CACHE01")
+        assert cached is not None
+        assert cached.matter_id == "MATTER-CACHE01"
+
+    def test_cache_miss_returns_none(self) -> None:
+        result = CounselOSPipeline.get_cached_result("MATTER-NONEXIST")
+        assert result is None

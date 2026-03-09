@@ -37,6 +37,16 @@ class CounselOSPipeline:
     Instantiate once at app startup; call run() per request.
     """
 
+    _result_cache: dict[str, "IntakeResult"] = {}
+
+    @staticmethod
+    def cache_result(result: IntakeResult) -> None:
+        CounselOSPipeline._result_cache[result.matter_id] = result
+
+    @staticmethod
+    def get_cached_result(matter_id: str) -> IntakeResult | None:
+        return CounselOSPipeline._result_cache.get(matter_id)
+
     def __init__(self) -> None:
         llm = get_llm_provider()
         self._agents = [
@@ -85,7 +95,9 @@ class CounselOSPipeline:
             len(state.errors),
         )
 
-        return self._build_result(state)
+        result = self._build_result(state)
+        CounselOSPipeline.cache_result(result)
+        return result
 
     @staticmethod
     def _build_result(state: MatterState) -> IntakeResult:
