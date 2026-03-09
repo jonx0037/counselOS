@@ -47,3 +47,19 @@ export interface IntakeResult {
   total_tokens_used: number;
   llm_model: string;
 }
+
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface ChatRequest {
+  matter_id: string;
+  message: string;
+  conversation_history: ChatMessage[];
+}
+
+export interface ChatResponse {
+  reply: string;
+  sources_used: number;
+}
