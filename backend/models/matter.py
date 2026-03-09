@@ -87,3 +87,21 @@ class IntakeResult(BaseModel):
     agents_run: list[str] = Field(default_factory=list)
     total_tokens_used: int = 0
     llm_model: str = ""
+
+
+# ── Chat ──────────────────────────────────────────────────────────────────────
+
+class ChatMessage(BaseModel):
+    role: str = Field(..., pattern="^(user|assistant)$")
+    content: str
+
+
+class ChatRequest(BaseModel):
+    matter_id: str
+    message: str
+    conversation_history: list[ChatMessage] = Field(default_factory=list)
+
+
+class ChatResponse(BaseModel):
+    reply: str
+    sources_used: int = 0

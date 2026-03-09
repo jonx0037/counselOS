@@ -15,6 +15,33 @@ from models.matter import (
     UrgencyLevel,
 )
 from orchestrator.state import MatterState
+from models.matter import ChatMessage, ChatRequest, ChatResponse
+
+
+class TestChatModels:
+    def test_chat_message_user_role(self) -> None:
+        msg = ChatMessage(role="user", content="Hello")
+        assert msg.role == "user"
+        assert msg.content == "Hello"
+
+    def test_chat_message_rejects_invalid_role(self) -> None:
+        with pytest.raises(ValueError):
+            ChatMessage(role="admin", content="Hello")
+
+    def test_chat_request_requires_matter_id_and_message(self) -> None:
+        req = ChatRequest(
+            matter_id="MATTER-TEST0001",
+            message="Why is my risk score 7?",
+            conversation_history=[],
+        )
+        assert req.matter_id == "MATTER-TEST0001"
+        assert req.message == "Why is my risk score 7?"
+        assert req.conversation_history == []
+
+    def test_chat_response_has_reply_and_sources(self) -> None:
+        resp = ChatResponse(reply="The risk is high because...", sources_used=2)
+        assert resp.reply == "The risk is high because..."
+        assert resp.sources_used == 2
 
 
 @pytest.fixture
