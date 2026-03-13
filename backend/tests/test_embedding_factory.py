@@ -88,3 +88,29 @@ class TestGeminiEmbeddingProvider:
                     task_type="RETRIEVAL_QUERY"
                 )
                 assert result == [0.4, 0.5, 0.6]
+
+
+class TestEmbeddingProviderFactory:
+    def test_gemini_provider_resolves(self) -> None:
+        """Factory resolves 'gemini' → GeminiEmbeddingProvider.
+        Patches genai.Client to avoid real API calls in CI."""
+        with patch("core.embeddings.settings") as mock_settings, \
+             patch("core.embeddings.gemini.genai") as _mock_genai:
+            mock_settings.embedding_provider = "gemini"
+            mock_settings.embedding_model = "gemini-embedding-2-preview"
+            mock_settings.google_api_key = "test-key"
+
+            from core.embeddings import get_embedding_provider
+
+            provider = get_embedding_provider()
+            assert hasattr(provider, "embed_documents")
+            assert hasattr(provider, "embed_query")
+
+    def test_unknown_provider_raises_value_error(self) -> None:
+        with patch("core.embeddings.settings") as mock_settings:
+            mock_settings.embedding_provider = "unknown_provider"
+
+            from core.embeddings import get_embedding_provider
+
+            with pytest.raises(ValueError, match="Unknown embedding provider"):
+                get_embedding_provider()
