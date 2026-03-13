@@ -6,6 +6,7 @@ Strategy: patch module-level globals (`_client`, `_collection`, `_embedder`)
 that are created at import time, rather than using importlib.reload.
 This avoids fragile reimport issues and keeps tests deterministic.
 """
+import uuid
 import pytest
 from unittest.mock import patch, MagicMock
 
@@ -23,18 +24,21 @@ class TestRagStore:
         ]
         mock_provider.embed_query.return_value = [0.0] * 3
 
+        # Use a unique collection name per test to ensure isolation
+        unique_collection_name = f"test_kb_{uuid.uuid4().hex}"
+
         with patch("rag.store.settings") as mock_settings, \
              patch("rag.store.chromadb") as mock_chromadb, \
              patch("rag.store.get_embedding_provider", return_value=mock_provider):
 
             mock_settings.chroma_persist_dir = str(tmp_path / "chroma")
-            mock_settings.chroma_collection_name = "test_kb"
+            mock_settings.chroma_collection_name = unique_collection_name
 
             # Use a real in-memory ChromaDB client for realistic behavior
             import chromadb
             client = chromadb.Client()
             collection = client.get_or_create_collection(
-                name="test_kb",
+                name=unique_collection_name,
                 metadata={"hnsw:space": "cosine"},
             )
 
