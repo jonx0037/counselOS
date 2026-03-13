@@ -79,7 +79,7 @@ class TestRagStore:
 
         results = self.store.retrieve("contract", n_results=1)
         assert isinstance(results, list)
-        assert len(results) >= 1
+        assert len(results) == 1
 
     def test_retrieve_empty_collection_returns_empty(self) -> None:
         results = self.store.retrieve("anything")

@@ -40,10 +40,6 @@ class TestGeminiEmbeddingProvider:
                 })()
                 mock_client.models.embed_content.return_value = mock_response
                 
-                # Capture the EmbedContentConfig call
-                mock_config_instance = MagicMock()
-                mock_types.EmbedContentConfig.return_value = mock_config_instance
-
                 from core.embeddings.gemini import GeminiEmbeddingProvider
 
                 provider = GeminiEmbeddingProvider(
@@ -53,7 +49,6 @@ class TestGeminiEmbeddingProvider:
                 result = provider.embed_documents(["hello world"])
 
                 mock_client.models.embed_content.assert_called_once()
-                # Check that EmbedContentConfig was called with correct task_type
                 mock_types.EmbedContentConfig.assert_called_once_with(
                     task_type="RETRIEVAL_DOCUMENT"
                 )
@@ -69,10 +64,6 @@ class TestGeminiEmbeddingProvider:
                     ]
                 })()
                 mock_client.models.embed_content.return_value = mock_response
-                
-                # Capture the EmbedContentConfig call
-                mock_config_instance = MagicMock()
-                mock_types.EmbedContentConfig.return_value = mock_config_instance
 
                 from core.embeddings.gemini import GeminiEmbeddingProvider
 
