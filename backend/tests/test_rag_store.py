@@ -15,8 +15,9 @@ class TestRagStore:
     @pytest.fixture(autouse=True)
     def _setup_store(self, tmp_path):
         """
-        Patch the module-level ChromaDB client and embedding provider
-        BEFORE importing rag.store, so tests never hit real infra.
+        Patch module-level globals (_client, _collection, _embedder) in
+        rag.store so tests use an in-memory ChromaDB client and mock
+        embeddings — no real infra or API calls.
         """
         mock_provider = MagicMock()
         mock_provider.embed_documents.side_effect = lambda texts: [
@@ -28,7 +29,6 @@ class TestRagStore:
         unique_collection_name = f"test_kb_{uuid.uuid4().hex}"
 
         with patch("rag.store.settings") as mock_settings, \
-             patch("rag.store.chromadb") as mock_chromadb, \
              patch("rag.store.get_embedding_provider", return_value=mock_provider):
 
             mock_settings.chroma_persist_dir = str(tmp_path / "chroma")
