@@ -13,6 +13,12 @@ class Settings(BaseSettings):
     llm_model: str = "claude-sonnet-4-6"
     anthropic_api_key: str = ""
 
+    # Embeddings
+    embedding_provider: str = "gemini"
+    embedding_model: str = "gemini-embedding-2-preview"  # verified: ai.google.dev/gemini-api/docs/embeddings
+    google_api_key: str = ""
+    chroma_collection_name: str = "counsel_kb"
+
     # Server
     backend_port: int = 8000
     cors_origins: str = "http://localhost:3000"
